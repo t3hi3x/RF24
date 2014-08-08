@@ -1232,4 +1232,61 @@ void RF24::setRetries(uint8_t delay, uint8_t count)
  write_register(SETUP_RETR,(delay&0xf)<<ARD | (count&0xf)<<ARC);
 }
 
+// Python Bindings (ctypes)
 
+extern "C" {
+    RF24* RF24_new(uint8_t cepin, uint8_t cspin, uint32_t spi_speed){ return new RF24(cepin, cspin, spi_speed); }
+    
+	void RF24_begin(RF24* rf){ rf->begin(); }
+	void RF24_startListening(RF24* rf) { rf->startListening(); }
+	void RF24_stopListening(RF24* rf) { rf->stopListening(); }
+    bool RF24_write(RF24* rf, const void* buf, uint8_t len ) { return rf->write(buf, len); }
+    bool RF24_available(RF24* rf) { return rf->available(); }
+    void RF24_read(RF24* rf, void* buf, uint8_t len ) { rf->read(buf, len); }
+    void RF24_openWritingPipe(RF24* rf, const uint8_t *address) { rf->openWritingPipe(address); }
+    void RF24_openReadingPipe(RF24* rf, uint8_t number, const uint8_t *address) { rf->openReadingPipe(number, address); }
+    uint8_t RF24_flush_tx(RF24* rf) { return rf->flush_tx(); }
+    void RF24_setRetries(RF24* rf, uint8_t delay, uint8_t count) { rf->setRetries(delay, count); }
+    void RF24_setChannel(RF24* rf, uint8_t channel) { rf->setChannel(channel); }
+    void RF24_setPayloadSize(RF24* rf, uint8_t size) { rf->setPayloadSize(size); }
+    uint8_t RF24_getPayloadSize(RF24* rf) { return rf->getPayloadSize(); }
+    uint8_t RF24_getDynamicPayloadSize(RF24* rf) { return rf->getDynamicPayloadSize() ;}
+    void RF24_enableAckPayload(RF24* rf) { rf->enableAckPayload() ;}
+    void RF24_enableDynamicPayloads(RF24* rf) { rf->enableDynamicPayloads() ;}
+    void RF24_enableDynamicAck(RF24* rf) { rf->enableDynamicAck() ;}
+    bool RF24_isPVariant(RF24* rf) { return rf->isPVariant() ;}
+    void RF24_setAutoAck(RF24* rf, bool enable) { rf->setAutoAck(enable) ;}
+    void RF24_setAutoAck_2(RF24* rf, uint8_t pipe, bool enable ) { rf->setAutoAck(pipe, enable) ;}
+    void RF24_setPALevel(RF24* rf, uint8_t level ) { rf->setPALevel(level) ;}
+    uint8_t RF24_getPALevel(RF24* rf) { return rf->getPALevel() ;}
+    bool RF24_setDataRate(RF24* rf, rf24_datarate_e speed) { return rf->setDataRate(speed) ;}
+    rf24_datarate_e RF24_getDataRate(RF24* rf) { return rf->getDataRate() ;}
+    void RF24_setCRCLength(RF24* rf, rf24_crclength_e length) { rf->setCRCLength(length) ;}
+    rf24_crclength_e RF24_getCRCLength(RF24* rf) { return rf->getCRCLength() ;}
+    void RF24_disableCRC(RF24* rf) { rf->disableCRC() ;}
+	
+	// Depreciated 
+    void RF24_openWritingPipe_2(RF24* rf, uint64_t address) { rf->openWritingPipe(address) ;}
+    void RF24_openReadingPipe_3(RF24* rf, uint8_t number, uint64_t address) { rf->openReadingPipe(number, address) ;}
+    void RF24_printDetails(RF24* rf) { rf->printDetails() ;}
+    void RF24_powerDown(RF24* rf) { rf->powerDown() ;}
+    void RF24_powerUp(RF24* rf) { rf->powerUp() ;}
+    bool RF24_write_2(RF24* rf, const void* buf, uint8_t len, const bool multicast ) { return rf->write(buf, len, multicast) ;}
+    bool RF24_writeFast(RF24* rf, const void* buf, uint8_t len ) { rf->writeFast(buf, len) ;}
+    bool RF24_writeFast_2(RF24* rf, const void* buf, uint8_t len, const bool multicast ) { return rf->writeFast(buf, len, multicast) ;}
+    bool RF24_writeBlocking(RF24* rf, const void* buf, uint8_t len, uint32_t timeout ) { return rf->writeBlocking(buf, len, timeout) ;}
+    bool RF24_txStandBy(RF24* rf) { return rf->txStandBy() ;}
+    bool RF24_txStandBy_2(RF24* rf, uint32_t timeout) { return rf->txStandBy(timeout) ;}
+    bool RF24_available_2(RF24* rf, uint8_t* pipe_num) { return rf->available(pipe_num) ;}
+    void RF24_startFastWrite(RF24* rf, const void* buf, uint8_t len, const bool multicast ) { rf->startFastWrite(buf, len, multicast) ;}
+    void RF24_startWrite(RF24* rf, const void* buf, uint8_t len, const bool multicast ) { rf->startWrite(buf, len, multicast) ;}
+    void RF24_reUseTX(RF24* rf) { rf->reUseTX() ;}
+    void RF24_writeAckPayload(RF24* rf, uint8_t pipe, const void* buf, uint8_t len) { rf->writeAckPayload(pipe, buf, len) ;}
+    bool RF24_isAckPayloadAvailable(RF24* rf) { return rf->isAckPayloadAvailable() ;}
+    void RF24_whatHappened(RF24* rf, bool& tx_ok, bool& tx_fail, bool& rx_ready) { rf->whatHappened(tx_ok, tx_fail, rx_ready) ;}
+    bool RF24_testCarrier(RF24* rf) { return rf->testCarrier() ;}
+    bool RF24_testRPD(RF24* rf) { return rf->testRPD() ;}
+    bool RF24_isValid(RF24* rf) { return rf->isValid() ;}
+    void RF24_maskIRQ(RF24* rf, bool tx_ok, bool tx_fail, bool rx_ready) { rf->maskIRQ(tx_ok, tx_fail, rx_ready) ;}
+    void RF24_setAddressWidth(RF24* rf, uint8_t a_width) { rf->setAddressWidth(a_width) ;}
+}

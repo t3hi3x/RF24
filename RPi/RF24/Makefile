@@ -34,7 +34,7 @@ all: librf24-bcm
 # Make the library
 librf24-bcm: RF24.o bcm2835.o 
 	g++ -shared -Wl,-soname,$@.so.1 ${CCFLAGS} -o ${LIBNAME} $^
-	cp -r $@.so.1 ./py/RF24
+	cp -r $@.so.1.0 ./py/RF24
 	
 # Library parts
 RF24.o: RF24.cpp

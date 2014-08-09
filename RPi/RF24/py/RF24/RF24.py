@@ -8,8 +8,22 @@
 #
 #############################################################################
 
-from ctypes import cdll
+from ctypes import cdll, c_int
 lib = cdll.LoadLibrary('./librf24-bcm.so.1')
+
+RF24_PA_MIN   = c_int(0)
+RF24_PA_LOW   = c_int(1)
+RF24_PA_HIGH  = c_int(2)
+RF24_PA_MAX   = c_int(3)
+RF24_PA_ERROR = c_int(4)
+
+RF24_1MBPS   = c_int(0)
+RF24_2MBPS   = c_int(1)
+RF24_250KBPS = c_int(2)
+
+RF24_CRC_DISABLED = c_int(0)
+RF24_CRC_8        = c_int(1)
+RF24_CRC_16       = c_int(2)
 
 class RF24(object):
     def __init__(self, ce_pin, cs_pin, spi_speed):

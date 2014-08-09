@@ -9,7 +9,7 @@
 #############################################################################
 
 from ctypes import cdll, c_int
-lib = cdll.LoadLibrary('./librf24-bcm.so.1')
+lib = cdll.LoadLibrary('./librf24-bcm.so.1.0')
 
 RF24_PA_MIN   = c_int(0)
 RF24_PA_LOW   = c_int(1)

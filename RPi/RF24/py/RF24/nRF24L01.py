@@ -28,52 +28,52 @@ DYNPD	    = 0x1C
 FEATURE	    = 0x1D
 
 # Bit Mnemonics
-MASK_RX_DR  = 6
-MASK_TX_DS  = 5
-MASK_MAX_RT = 4
-EN_CRC      = 3
-CRCO        = 2
-PWR_UP      = 1
-PRIM_RX     = 0
-ENAA_P5     = 5
-ENAA_P4     = 4
-ENAA_P3     = 3
-ENAA_P2     = 2
-ENAA_P1     = 1
-ENAA_P0     = 0
-ERX_P5      = 5
-ERX_P4      = 4
-ERX_P3      = 3
-ERX_P2      = 2
-ERX_P1      = 1
-ERX_P0      = 0
-AW          = 0
-ARD         = 4
-ARC         = 0
-PLL_LOCK    = 4
-RF_DR       = 3
-RF_PWR      = 6
-RX_DR       = 6
-TX_DS       = 5
-MAX_RT      = 4
-RX_P_NO     = 1
-TX_FULL     = 0
-PLOS_CNT    = 4
-ARC_CNT     = 0
-TX_REUSE    = 6
-FIFO_FULL   = 5
-TX_EMPTY    = 4
-RX_FULL     = 1
-RX_EMPTY    = 0
-DPL_P5	    = 5
-DPL_P4	    = 4
-DPL_P3	    = 3
-DPL_P2	    = 2
-DPL_P1	    = 1
-DPL_P0	    = 0
-EN_DPL	    = 2
-EN_ACK_PAY  = 1
-EN_DYN_ACK  = 0
+MASK_RX_DR  = c_int(6)
+MASK_TX_DS  = c_int(5)
+MASK_MAX_RT = c_int(4)
+EN_CRC      = c_int(3)
+CRCO        = c_int(2)
+PWR_UP      = c_int(1)
+PRIM_RX     = c_int(0)
+ENAA_P5     = c_int(5)
+ENAA_P4     = c_int(4)
+ENAA_P3     = c_int(3)
+ENAA_P2     = c_int(2)
+ENAA_P1     = c_int(1)
+ENAA_P0     = c_int(0)
+ERX_P5      = c_int(5)
+ERX_P4      = c_int(4)
+ERX_P3      = c_int(3)
+ERX_P2      = c_int(2)
+ERX_P1      = c_int(1)
+ERX_P0      = c_int(0)
+AW          = c_int(0)
+ARD         = c_int(4)
+ARC         = c_int(0)
+PLL_LOCK    = c_int(4)
+RF_DR       = c_int(3)
+RF_PWR      = c_int(6)
+RX_DR       = c_int(6)
+TX_DS       = c_int(5)
+MAX_RT      = c_int(4)
+RX_P_NO     = c_int(1)
+TX_FULL     = c_int(0)
+PLOS_CNT    = c_int(4)
+ARC_CNT     = c_int(0)
+TX_REUSE    = c_int(6)
+FIFO_FULL   = c_int(5)
+TX_EMPTY    = c_int(4)
+RX_FULL     = c_int(1)
+RX_EMPTY    = c_int(0)
+DPL_P5	    = c_int(5)
+DPL_P4	    = c_int(4)
+DPL_P3	    = c_int(3)
+DPL_P2	    = c_int(2)
+DPL_P1	    = c_int(1)
+DPL_P0	    = c_int(0)
+EN_DPL	    = c_int(2)
+EN_ACK_PAY  = c_int(1)
+EN_DYN_ACK  = c_int(0)
 
 # Instruction Mnemonics
 R_REGISTER    = 0x00
@@ -90,14 +90,14 @@ REUSE_TX_PL   = 0xE3
 NOP           = 0xFF
 
 # Non-P omissions
-LNA_HCURR   0
+LNA_HCURR   c_int(0)
 
 # P model memory Map
 RPD         0x09
 W_TX_PAYLOAD_NO_ACK  0xB0
 
 # P model bit Mnemonics
-RF_DR_LOW   5
-RF_DR_HIGH  3
-RF_PWR_LOW  1
-RF_PWR_HIGH 2
+RF_DR_LOW   c_int(5)
+RF_DR_HIGH  c_int(3)
+RF_PWR_LOW  c_int(1)
+RF_PWR_HIGH c_int(2)

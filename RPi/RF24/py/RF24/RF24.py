@@ -8,18 +8,18 @@
 #
 #############################################################################
 
-from ctypes import cdll, c_int
+from ctypes import cdll, c_int, byref
 lib = cdll.LoadLibrary('./librf24-bcm.so.1.0')
 
-RF24_PA_MIN   = c_int(0)
-RF24_PA_LOW   = c_int(1)
-RF24_PA_HIGH  = c_int(2)
-RF24_PA_MAX   = c_int(3)
-RF24_PA_ERROR = c_int(4)
+RF24_PA_MIN       = c_int(0)
+RF24_PA_LOW       = c_int(1)
+RF24_PA_HIGH      = c_int(2)
+RF24_PA_MAX       = c_int(3)
+RF24_PA_ERROR     = c_int(4)
 
-RF24_1MBPS   = c_int(0)
-RF24_2MBPS   = c_int(1)
-RF24_250KBPS = c_int(2)
+RF24_1MBPS        = c_int(0)
+RF24_2MBPS        = c_int(1)
+RF24_250KBPS      = c_int(2)
 
 RF24_CRC_DISABLED = c_int(0)
 RF24_CRC_8        = c_int(1)
@@ -45,7 +45,10 @@ class RF24(object):
         return lib.RF24_available(self.obj)
     
     def read(self, buf, length):
-        lib.RF24_read(self.obj, buf, length)
+        # Python doesn't direclty support referencable parameters, but since it's dynamically typed, we can return an arbitray object
+        to_return = buf
+        lib.RF24_read(self.obj, byref(to_return), length)
+        return to_return
     
     def openWritingPage(self, address):
         lib.RF24_openWritingPage(self.obj, address)

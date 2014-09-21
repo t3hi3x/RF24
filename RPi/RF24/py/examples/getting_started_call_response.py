@@ -14,14 +14,14 @@
 ###
 
 import sys
-sys.path.append('../RF24')
+sys.path.append('../RF24/')
 
 from RF24 import *
 from bcm2835 import *
 
-import time, ctypes
+from time import *
 
-millis = lambda: int(round(time.time() * 1000))
+millis = lambda: int(round(time() * 1000))
 
 ##
 ## Hardware configuration
@@ -38,13 +38,12 @@ millis = lambda: int(round(time.time() * 1000))
 ## Setup for GPIO 15 CE and CE0 CSN with SPI Speed @ 8Mhz
 radio = RF24(RPI_V2_GPIO_P1_15, RPI_V2_GPIO_P1_24, BCM2835_SPI_SPEED_8MHZ)
 
-
 ## Radio pipe addresses for the 2 nodes to communicate.
-addresses[][6] = {"1Node","2Node"}
+addresses = ["1Node","2Node"]
 
 role_ping_out = 1
 role_pong_back = 0
-role = 0
+role = 1
 
 counter = 1                                # A single byte to keep track of the data being sent back and forth
 
@@ -58,26 +57,17 @@ def main():
     radio.setPayloadSize(1)                # Here we are sending 1-byte payloads to test the call-response speed
     radio.printDetails()                   # Dump the configuration of the rf unit for debugging
 
-
-#/********* Role chooser ***********/
-
-    print("\n ************ Role Setup ***********\n")
-    input = ""
+    print("\n ************ Role Setup ***********")
     myChar = {0}
     read_line = input("Choose a role: Enter 0 for pong_back, 1 for ping_out (CTRL+C to exit)\n>")
-    
-    if read_line.len == 1:
-	    myChar = input[0]
-    if myChar == '0':
-        print("Role: Pong Back, awaiting transmission\n\n")
+
+    if read_line == 0:
+        print("Role: Pong Back, awaiting transmission")
         role = role_pong_back
     else:
-        print("Role: Ping Out, starting transmission\n\n")
+        print("Role: Ping Out, starting transmission")
         role = role_ping_out
 
-#/***********************************/
-    # This opens two pipes for these two nodes to communicate
-    # back and forth.
     if role == role_ping_out:
         radio.openWritingPipe(addresses[0])
         radio.openReadingPipe(1,addresses[1])
@@ -87,42 +77,42 @@ def main():
         radio.startListening()
 
     while True:
-        #/****************** Ping Out Role ***************************/
+        global counter
+        import time
         if role == role_ping_out:                                   # Radio is in ping mode
             gotByte = int()                                         # Initialize a variable for the incoming response
 
             radio.stopListening();                                  # First, stop listening so we can talk.
-            print("Now sending %d as payload. ",counter);           # Use a simple byte counter as payload
-            unsigned long time = millis();                          # Record the current microsecond count
+            print("Now sending %s as payload. " % counter)           # Use a simple byte counter as payload
+            current_time = millis();                               # Record the current microsecond count
 
-            if radio.write(&counter,1):                             # Send the counter variable to the other radio
+            if radio.write(counter, 1):                             # Send the counter variable to the other radio
                 if not radio.available():                           # If nothing in the buffer, we got an ack but it is blank
-                    print("Got blank response. round-trip delay: %s ms\n" % (millis()-time)
+                    print("Got blank response. round-trip delay: %s ms" % (millis()-current_time))
                 else:
                     while radio.available():                        # If an ack with payload was received
-                        radio.read( &gotByte, 1 )                   # Read it, and display the response time
-                        print("Got response %s, round-trip delay: %s ms\n" % (gotByte, (millis()-time))
-                        counter++                                   # Increment the counter variable
-
+                        gotByte = radio.read(gotByte)                   # Read it, and display the response time
+                        print("Got response %s, round-trip delay: %s ms" % (gotByte, (millis()-current_time)))
+                        counter += 1                                   # Increment the counter variable
             else:
-                print("Sending failed.\n"); }                       # If no ack response, sending failed
+                print("Sending failed.\n")                      # If no ack response, sending failed
 
-        time.sleep(1)  // Try again later
+            time.sleep(.001) # Try again later
         #delay(250);
 
         #/****************** Pong Back Role ***************************/
 
         if role == role_pong_back:
-            pipeNo = int()
-            gotByte = int()                                         # Declare variables for the pipe and the byte received
-            if radio.available(&pipeNo):                            # Read all available payloads      
-                radio.flush_tx()                                    # Clear any unused ACK payloads	  				  
-                radio.read( &gotByte, 1 )
-                                                                    # Since this is a call-response. Respond directly with an ack payload.
-                                                                    # Ack payloads are much more efficient than switching to transmit mode to respond to a call
-                radio.writeAckPayload(pipeNo,&gotByte, 1 )          # This can be commented out to send empty payloads.	  
-                print("Sent response %d \n\r", gotByte)
-                time.sleep(900)                                     # Delay after a response to minimize CPU usage on RPi. Expects a payload every second      
+            pipeNo = radio.get_pipe_num()
+            gotByte = unicode()
+                                                     # Declare variables for the pipe and the byte received
+            if radio.available():                                   # Read all available payloads
+                radio.flush_tx()                                    # Clear any unused ACK payloads
+                gotByte = radio.read(gotByte)
+                print("Received %s" % gotByte)
+                radio.writeAckPayload(pipeNo, gotByte, 1 )          # This can be commented out to send empty payloads.
+                print("Sent response %s" % gotByte)
+            time.sleep(.900)                                     # Delay after a response to minimize CPU usage on RPi. Expects a payload every second
 
 if __name__ == "__main__":
     main()

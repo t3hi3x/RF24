@@ -41,16 +41,16 @@ uint8_t RF24::read_register(uint8_t reg, uint8_t* buf, uint8_t len)
 	}
 
   return status;
-} 
+}
 
 /****************************************************************************/
 uint8_t RF24::read_register(uint8_t reg)
 {
   uint8_t result;
-	
+
 	uint8_t * prx = spi_rxbuff;
 	uint8_t * ptx = spi_txbuff;
-	
+
 	*ptx++ = ( R_REGISTER | ( REGISTER_MASK & reg ) );
 	*ptx++ = NOP ; // Dummy operation, just for reading
 
@@ -66,14 +66,14 @@ uint8_t RF24::read_register(uint8_t reg)
 uint8_t RF24::write_register(uint8_t reg, uint8_t value)
 {
   uint8_t status;
-	
+
 	uint8_t * prx = spi_rxbuff;
 	uint8_t * ptx = spi_txbuff;
 
 	*ptx++ = ( W_REGISTER | ( REGISTER_MASK & reg ) );
 	*ptx = value ;
 
-  	bcm2835_spi_transfernb( (char *) spi_txbuff, (char *) spi_rxbuff, 2);  
+  	bcm2835_spi_transfernb( (char *) spi_txbuff, (char *) spi_rxbuff, 2);
 
 	status = *prx++; // status is 1st byte of receive buffer
 
@@ -266,8 +266,8 @@ void RF24::print_address_register(const char* name, uint8_t reg, uint8_t qty)
 
 RF24::RF24(uint8_t _cepin, uint8_t _cspin, uint32_t _spi_speed):
   ce_pin(_cepin), csn_pin(_cspin), spi_speed(_spi_speed),p_variant(false),
-  payload_size(32), dynamic_payloads_enabled(false),addr_width(5)//,pipe0_reading_address(0) 
-{	
+  payload_size(32), dynamic_payloads_enabled(false),addr_width(5)//,pipe0_reading_address(0)
+{
 }
 
 /****************************************************************************/
@@ -509,7 +509,7 @@ void RF24::startListening(void)
 
   // Restore the pipe0 adddress, if exists
   if (pipe0_reading_address[0] > 0){
-    write_register(RX_ADDR_P0, pipe0_reading_address,addr_width);	
+    write_register(RX_ADDR_P0, pipe0_reading_address,addr_width);
   }
   // Flush buffers
   //flush_rx();
@@ -530,7 +530,7 @@ void RF24::stopListening(void)
   flush_tx();
   flush_rx();
   delayMicroseconds(150);
-  write_register(CONFIG, ( read_register(CONFIG) ) & ~_BV(PRIM_RX) );  
+  write_register(CONFIG, ( read_register(CONFIG) ) & ~_BV(PRIM_RX) );
   delayMicroseconds(150);
 }
 
@@ -560,7 +560,7 @@ void RF24::powerUp(void)
 
 #if defined (FAILURE_HANDLING)
 void RF24::errNotify(){
-	if(debug){ printf("HARDWARE FAIL\n\r"); }	
+	if(debug){ printf("HARDWARE FAIL\n\r"); }
 	failureDetect = true;
 }
 #endif
@@ -575,19 +575,19 @@ bool RF24::write( const void* buf, uint8_t len, const bool multicast ){
 	//Wait until complete or failed
 	#if defined (FAILURE_HANDLING)
 		uint32_t timer = millis();
-	#endif 
+	#endif
     // If this hangs, it ain't coming back, no sense in timing out
-	while( ! ( get_status()  & ( _BV(TX_DS) | _BV(MAX_RT) ))) { 
+	while( ! ( get_status()  & ( _BV(TX_DS) | _BV(MAX_RT) ))) {
 		#if defined (FAILURE_HANDLING)
-			if(millis() - timer > 175){			
+			if(millis() - timer > 175){
 				errNotify();
-				return 0;							
+				return 0;
 			}
 		#endif
 	}
 	bcm2835_gpio_write(ce_pin, LOW);
 	uint8_t status = write_register(STATUS,_BV(RX_DR) | _BV(TX_DS) | _BV(MAX_RT) );
-	
+
 
   //Max retries exceeded
   if( status & _BV(MAX_RT)){
@@ -621,9 +621,9 @@ bool RF24::writeBlocking( const void* buf, uint8_t len, uint32_t timeout )
 			if(millis() - timer > timeout){ return 0; }		  //If this payload has exceeded the user-defined timeout, exit and return 0
 		}
 		#if defined (FAILURE_HANDLING)
-			if(millis() - timer > (timeout+75) ){			
+			if(millis() - timer > (timeout+75) ){
 				errNotify();
-				return 0;							
+				return 0;
 			}
 		#endif
   	}
@@ -656,7 +656,7 @@ bool RF24::writeFast( const void* buf, uint8_t len, const bool multicast )
 	#if defined (FAILURE_HANDLING)
 		uint32_t timer = millis();
 	#endif
-	
+
 	while( ( get_status()  & ( _BV(TX_FULL) ))) {			  //Blocking only if FIFO is full. This will loop and block until TX is successful or fail
 
 		if( get_status() & _BV(MAX_RT)){
@@ -666,9 +666,9 @@ bool RF24::writeFast( const void* buf, uint8_t len, const bool multicast )
 															  //From the user perspective, if you get a 0, just keep trying to send the same payload
 		}
 		#if defined (FAILURE_HANDLING)
-			if(millis() - timer > 75 ){			
+			if(millis() - timer > 75 ){
 				errNotify();
-				return 0;							
+				return 0;
 			}
 		#endif
   	}
@@ -726,7 +726,7 @@ bool RF24::txStandBy(){
 		#if defined (FAILURE_HANDLING)
 			if( millis() - timer > 75){
 				errNotify();
-				return 0;	
+				return 0;
 			}
 		#endif
 	}
@@ -755,9 +755,9 @@ bool RF24::txStandBy(uint32_t timeout){
 		#if defined (FAILURE_HANDLING)
 			if( millis() - start > (timeout+75)){
 				errNotify();
-				return 0;	
+				return 0;
 			}
-		#endif		
+		#endif
 	}
 	bcm2835_gpio_write(ce_pin, LOW);	   //Set STANDBY-I mode
 	return 1;
@@ -886,7 +886,7 @@ void RF24::openReadingPipe(uint8_t child, uint64_t address)
   if (child == 0){
 	memcpy(pipe0_reading_address,&address,addr_width);
   }
-  
+
   if (child <= 6)
   {
     // For pipes 2-5, only write the LSB
@@ -1030,7 +1030,7 @@ void RF24::writeAckPayload(uint8_t pipe, const void* buf, uint8_t len)
   while ( data_len-- ){
     *ptx++ =  *current++;
   }
-	bcm2835_spi_transfern( (char *) spi_txbuff, size);	
+	bcm2835_spi_transfern( (char *) spi_txbuff, size);
 
 }
 
@@ -1236,10 +1236,10 @@ void RF24::setRetries(uint8_t delay, uint8_t count)
 
 extern "C" {
     RF24* RF24_new(uint8_t cepin, uint8_t cspin, uint32_t spi_speed){ return new RF24(cepin, cspin, spi_speed); }
-    
-	void RF24_begin(RF24* rf){ rf->begin(); }
-	void RF24_startListening(RF24* rf) { rf->startListening(); }
-	void RF24_stopListening(RF24* rf) { rf->stopListening(); }
+
+    void RF24_begin(RF24* rf){ rf->begin(); }
+    void RF24_startListening(RF24* rf) { rf->startListening(); }
+    void RF24_stopListening(RF24* rf) { rf->stopListening(); }
     bool RF24_write(RF24* rf, const void* buf, uint8_t len ) { return rf->write(buf, len); }
     bool RF24_available(RF24* rf) { return rf->available(); }
     void RF24_read(RF24* rf, void* buf, uint8_t len ) { rf->read(buf, len); }
@@ -1264,8 +1264,8 @@ extern "C" {
     void RF24_setCRCLength(RF24* rf, rf24_crclength_e length) { rf->setCRCLength(length) ;}
     rf24_crclength_e RF24_getCRCLength(RF24* rf) { return rf->getCRCLength() ;}
     void RF24_disableCRC(RF24* rf) { rf->disableCRC() ;}
-	
-	// Depreciated 
+
+	// Depreciated
     void RF24_openWritingPipe_2(RF24* rf, uint64_t address) { rf->openWritingPipe(address) ;}
     void RF24_openReadingPipe_3(RF24* rf, uint8_t number, uint64_t address) { rf->openReadingPipe(number, address) ;}
     void RF24_printDetails(RF24* rf) { rf->printDetails() ;}
@@ -1281,7 +1281,7 @@ extern "C" {
     void RF24_startFastWrite(RF24* rf, const void* buf, uint8_t len, const bool multicast ) { rf->startFastWrite(buf, len, multicast) ;}
     void RF24_startWrite(RF24* rf, const void* buf, uint8_t len, const bool multicast ) { rf->startWrite(buf, len, multicast) ;}
     void RF24_reUseTX(RF24* rf) { rf->reUseTX() ;}
-    void RF24_writeAckPayload(RF24* rf, uint8_t pipe, const void* buf, uint8_t len) { rf->writeAckPayload(pipe, buf, len) ;}
+    void RF24_writeAckPayload(RF24* rf, uint8_t pipe, const void* buf, uint8_t len) { rf->writeAckPayload(pipe, &buf, len) ;}
     bool RF24_isAckPayloadAvailable(RF24* rf) { return rf->isAckPayloadAvailable() ;}
     void RF24_whatHappened(RF24* rf, bool& tx_ok, bool& tx_fail, bool& rx_ready) { rf->whatHappened(tx_ok, tx_fail, rx_ready) ;}
     bool RF24_testCarrier(RF24* rf) { return rf->testCarrier() ;}
